@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 
 import { MobileIcon, AddressIcon, WebIcon, MailIcon, UserIcon, ArrowToTop } from '~/components/UiComponents/Icon';
+import logo from '~/assets/images/logo.png';
 
 function Contact() {
     const { t } = useTranslation();
@@ -16,11 +17,7 @@ function Contact() {
             <div className='grid grid-cols-1 gap-4 mb-8 md:grid-cols-2'>
                 {/* LOGO */}
                 <div className='dark:text-white'>
-                    <img
-                        className='justify-self-center w-80 md:justify-self-start md:-ml-13'
-                        src='src/assets/images/logo.png'
-                        alt='UTE'
-                    />
+                    <img className='justify-self-center w-80 md:justify-self-start md:-ml-13' src={logo} alt='UTE' />
 
                     {/* TITLE */}
                     <h2 className='-mt-12 contact-header dark:text-white-dark'>

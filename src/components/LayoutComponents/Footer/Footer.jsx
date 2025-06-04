@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { ArrowToTop } from '~/components/UiComponents/Icon';
+import logo from '~/assets/images/logo.png';
 
 function Footer() {
     const { t } = useTranslation();
@@ -12,7 +13,7 @@ function Footer() {
                 {/* LOGO */}
                 <div className='footer_col md:border-b-0'>
                     <Link className='flex gap-2 items-center' to='/'>
-                        <img className='w-30' alt='logo' src='/src/assets/images/logo.png' />
+                        <img className='w-30' alt='logo' src={logo} />
                     </Link>
                     <p className='footer-item -mt-4 pl-5'>
                         {t('DriveHub - A comprehensive driver monitoring solution')}

@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
 
+import logo from '~/assets/images/logo.png';
+import logoDark from '~/assets/images/logo-dark.png';
+
 import {
     MoonIconCustom,
     LanguageIconCustom,
@@ -111,9 +114,9 @@ function Navbar() {
                         <div className='flex items-center justify-center'>
                             <Link className='shrink-0 flex items-center gap-0' to='/'>
                                 {theme === 'light' ? (
-                                    <img className='w-20' src='/src/assets/images/logo.png' alt='' />
+                                    <img className='w-20' src={logo} alt='' />
                                 ) : (
-                                    <img className='w-20' src='/src/assets/images/logo-dark.png' alt='' />
+                                    <img className='w-20' src={logoDark} alt='' />
                                 )}
                             </Link>
                         </div>
