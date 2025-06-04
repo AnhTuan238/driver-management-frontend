@@ -1,22 +1,22 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-import { refreshToken } from '~/api/authentication';
+// import { refreshToken } from '~/api/authentication';
 
-// const refreshToken = async () => {
-//     try {
-//         const res = await axios.post(
-//             `http://localhost:5000/authentication/refresh`,
-//             {},
-//             {
-//                 withCredentials: true,
-//             },
-//         );
-//         return res.data;
-//     } catch (err) {
-//         console.log('Refresh token failed:', err);
-//     }
-// };
+const refreshToken = async () => {
+    try {
+        const res = await axios.post(
+            `${import.meta.env.VITE_BASE_URL}/authentication/refresh`,
+            {},
+            {
+                withCredentials: true,
+            },
+        );
+        return res.data;
+    } catch (err) {
+        console.log('Refresh token failed:', err);
+    }
+};
 
 export const createAxios = (driver, dispatch, stateSuccess) => {
     const newInstance = axios.create();
