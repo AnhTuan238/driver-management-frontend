@@ -33,3 +33,18 @@ export const logoutRequest = async (driver, dispatch, navigate, accessToken, axi
         dispatch(logoutFailed());
     }
 };
+
+export const refreshToken = async () => {
+    try {
+        const res = await axios.post(
+            `${BASE_URL}/authentication/refresh`,
+            {},
+            {
+                withCredentials: true,
+            },
+        );
+        return res.data;
+    } catch (err) {
+        console.log('Refresh token failed:', err);
+    }
+};
