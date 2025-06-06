@@ -11,19 +11,17 @@ import { loginSuccess } from '~/redux/authenticationSlice';
 import Spinner from '~/components/UiComponents/Spinner';
 import Modal from '~/components/LayoutComponents/Modal';
 import { createAxios } from '~/createInstance';
-import { addToast } from '~/redux/toastSlice';
 import { addDriver } from '~/api/driver';
 
 function Add() {
     const [isAddSuccessModal, setIsAddSuccessModal] = useState(false);
     const [isAddFailureModal, setIsAddFailureModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const driver = useSelector((state) => state.authentication.login?.currentDriver);
-    const isAdmin = driver?.admin;
     let axiosJWT = createAxios(driver, dispatch, loginSuccess);
 
     const initialValues = {
@@ -71,7 +69,7 @@ function Add() {
         { label: 'First Name', name: 'firstName', type: 'text', placeholder: 'First Name' },
         { label: 'Last Name', name: 'lastName', type: 'text', placeholder: 'Last Name' },
         { label: 'Driver Id', name: 'idDriver', type: 'text', placeholder: 'Driver Id' },
-        { label: 'Password', name: 'password', type: 'text', placeholder: 'Password' },
+        { label: 'Password', name: 'password', type: 'password', placeholder: 'Password' },
         { label: 'Email Address', name: 'emailAddress', type: 'text', placeholder: 'Email Address' },
         { label: 'Mobile Number', name: 'phone', type: 'text', placeholder: 'Mobile Number' },
         { label: 'Date of Birth', name: 'dateOfBirth', type: 'date', placeholder: 'Date of Birth' },

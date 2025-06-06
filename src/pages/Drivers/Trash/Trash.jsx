@@ -253,7 +253,7 @@ function Trash() {
                                             <div className='flex items-center gap-2'>
                                                 <img
                                                     className='rounded-full w-8 h-8 min-w-8 object-cover'
-                                                    src={`${import.meta.env.VITE_BASE_URL}/public/images/${driver.avatar}`}
+                                                    src={driver.avatar}
                                                     alt='Avatar'
                                                 />
                                                 {`${driver.lastName} ${driver.firstName}`}

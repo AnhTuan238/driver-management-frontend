@@ -71,6 +71,7 @@ export const updateDriver = async (id, values, accessToken, axiosJWT) => {
     formData.append('zone', values.zone);
     formData.append('admin', values.admin);
     formData.append('licensePlate', values.licensePlate);
+
     if (values.avatar) {
         formData.append('avatar', values.avatar);
     }

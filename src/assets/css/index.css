@@ -86,6 +86,11 @@
     .scrollbar-hidden::-webkit-scrollbar {
         display: none;
     }
+    input:-webkit-autofill {
+        box-shadow: 0 0 0 1000px white inset !important;
+        -webkit-box-shadow: 0 0 0 1000px white inset !important;
+        -webkit-text-fill-color: #000 !important;
+    }
 }
 
 @layer components {

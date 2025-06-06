@@ -63,7 +63,7 @@ function Overview() {
                         <div className='flex items-center gap-2 pb-2 border-b border-border'>
                             <img
                                 className='rounded-full w-11 h-11 min-w-11 object-cover'
-                                src={`${import.meta.env.VITE_BASE_URL}/public/images/${driver.avatar}`}
+                                src={driver.avatar}
                                 alt='Avatar'
                             />
                             <div className='basis-full flex flex-col justify-between h-11'>

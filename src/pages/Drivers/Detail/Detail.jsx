@@ -107,7 +107,7 @@ function Detail() {
                                         <div className='flex items-center gap-2 col-span-2 border border-border rounded-xl p-2'>
                                             <img
                                                 className='rounded-full w-13 h-13 min-w-13 object-cover justify-self-center'
-                                                src={`${import.meta.env.VITE_BASE_URL}/public/images/${driver.avatar}`}
+                                                src={driver.avatar}
                                                 alt='Avatar'
                                             />
                                             <div className='flex flex-col gap-[2px]'>

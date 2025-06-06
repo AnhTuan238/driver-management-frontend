@@ -300,7 +300,7 @@ function List() {
                                             <div className='flex items-center gap-2 dark:text-white-dark'>
                                                 <img
                                                     className='size-8 rounded-full object-cover'
-                                                    src={`${import.meta.env.VITE_BASE_URL}/public/images/${driver.avatar}`}
+                                                    src={driver.avatar}
                                                     alt='Avatar'
                                                 />
                                                 {`${driver.lastName} ${driver.firstName}`}

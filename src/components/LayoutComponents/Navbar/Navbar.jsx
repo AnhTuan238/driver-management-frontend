@@ -28,9 +28,9 @@ import Spinner from '~/components/UiComponents/Spinner';
 import Search from '~/components/UiComponents/Search';
 import Button from '~/components/UiComponents/Button';
 import { logoutRequest } from '~/api/authentication';
+import { loginRequest } from '~/api/authentication';
 import { createAxios } from '~/createInstance';
 import useTheme from '~/hooks/useTheme';
-import { loginRequest } from '~/api/authentication';
 
 function Navbar() {
     const [isLoginSuccessModal, setIsLoginSuccessModal] = useState(false);
@@ -57,7 +57,9 @@ function Navbar() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
         setIsLoading(true);
+
         const newDriver = {
             idDriver: id,
             password: password,
@@ -259,7 +261,7 @@ function Navbar() {
                                 <div className='flex gap-1 items-center cursor-pointer'>
                                     <img
                                         className='rounded-full w-10 h-10 min-w-10 object-cover'
-                                        src={`${import.meta.env.VITE_BASE_URL}/public/images/${driver.avatar}`}
+                                        src={driver.avatar}
                                         alt='Avatar'
                                     />
                                     <p className='nav-link text-primary font-semibold hover:bg-transparent'>

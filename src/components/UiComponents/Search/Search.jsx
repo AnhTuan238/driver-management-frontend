@@ -1,6 +1,5 @@
 import { InstantSearch, SearchBox, Hits, useSearchBox, Highlight, useInstantSearch } from 'react-instantsearch';
 import { liteClient as algoliasearch } from 'algoliasearch/lite';
-import { useEffect, useState, useRef, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -34,7 +33,7 @@ function Hit({ hit }) {
                             <div className='flex items-center gap-2 col-span-2'>
                                 <img
                                     className='justify-self-center w-13 h-13 min-w-13 rounded-full object-cover'
-                                    src={`${import.meta.env.VITE_BASE_URL}/public/images/${hit.avatar}`}
+                                    src={hit.avatar}
                                     alt='Avatar'
                                 />
                                 <div className='flex flex-col gap-[2px]'>

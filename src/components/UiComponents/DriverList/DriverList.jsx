@@ -30,7 +30,7 @@ function DriverList({ className, hideAvatar, onClick }) {
                     >
                         <img
                             className={hideAvatar ? 'hidden' : 'w-8 h-8 min-w-8 rounded-full object-cover'}
-                            src={`${import.meta.env.VITE_BASE_URL}/public/images/${driver.avatar}`}
+                            src={driver.avatar}
                             alt='Avatar'
                         />
                         {`${driver.lastName} ${driver.firstName}`}
