@@ -84,7 +84,7 @@ function Trash() {
                 setOriginalDrivers((prevDrivers) =>
                     prevDrivers.filter((driver) => driver.idDriver !== selectedDriverId),
                 );
-                setModalType(true);
+                setModalType('deleteSuccess');
                 setSelectedDriverId(null);
             }, 800);
         } catch (error) {
@@ -325,7 +325,7 @@ function Trash() {
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
                     message='The driver has been restored.'
-                    description="The driver has been restored. Click 'Confirm' to continue editing!"
+                    description="The driver has been restored. Click 'Confirm' to continue editing."
                     primaryActionLabel='Confirm'
                     onPrimaryAction={handleCloseModal}
                 />
@@ -346,7 +346,7 @@ function Trash() {
                 <Modal
                     icon={<WarningIcon className='h-[40px]!' />}
                     color='var(--color-warning)'
-                    message={t('Delete Driver?')}
+                    message={t('Permanently delete this driver?')}
                     description={t(
                         'This action will permanently remove the driver from the system. Are you sure you want to proceed?',
                     )}
@@ -362,7 +362,7 @@ function Trash() {
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
                     message={t('The driver has been deleted.')}
-                    description={t("Click 'Confirm' to return to the driver list.")}
+                    description={t("Click 'Confirm' to continue editing.")}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCloseModal}
                 />
