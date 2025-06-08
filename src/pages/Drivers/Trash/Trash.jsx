@@ -16,11 +16,7 @@ import { createAxios } from '~/createInstance';
 import { addToast } from '~/redux/toastSlice';
 
 function Trash() {
-    const [isRestoreSuccessModal, setIsRestoreSuccessModal] = useState(false);
-    const [isRestoreFailureModal, setIsRestoreFailureModal] = useState(false);
-    const [isDeleteSuccessModal, setIsDeleteSuccessModal] = useState(false);
-    const [isDeleteFailureModal, setIsDeleteFailureModal] = useState(false);
-    const [isConfirmDeleteModal, setIsConfirmDeleteModal] = useState(false);
+    const [modalType, setModalType] = useState(null);
     const [selectedDriverId, setSelectedDriverId] = useState(null);
     const [originalDrivers, setOriginalDrivers] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -57,25 +53,25 @@ function Trash() {
                 setIsLoading(false);
                 setDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.idDriver !== id));
                 setOriginalDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.idDriver !== id));
-                setIsRestoreSuccessModal(true);
+                setModalType('restoreSuccess');
                 setSelectedDriverId(null);
             }, 800);
         } catch (error) {
             const errorMessage = error?.response?.data?.message || 'Something went wrong';
             setErrorMessage(errorMessage);
             setIsLoading(false);
-            setIsRestoreFailureModal(true);
+            setModalType('restoreFailed');
             console.error('API call failed: ', error);
         }
     };
 
     const handleClickDeleteButton = (id) => {
-        setIsConfirmDeleteModal(true);
+        setModalType('confirmDelete');
         setSelectedDriverId(id);
     };
 
     const handleDelete = async () => {
-        setIsConfirmDeleteModal(false);
+        setModalType(null);
         setIsLoading(true);
 
         try {
@@ -86,24 +82,20 @@ function Trash() {
                 setOriginalDrivers((prevDrivers) =>
                     prevDrivers.filter((driver) => driver.idDriver !== selectedDriverId),
                 );
-                setIsDeleteSuccessModal(true);
+                setModalType(true);
                 setSelectedDriverId(null);
             }, 800);
         } catch (error) {
             const errorMessage = error?.response?.data?.message || 'Something went wrong';
             setErrorMessage(errorMessage);
             setIsLoading(false);
-            setIsDeleteFailureModal(true);
+            setModalType('deleteFailed');
             console.error('API call failed: ', error);
         }
     };
 
     const handleCloseModal = () => {
-        setIsDeleteSuccessModal(false);
-        setIsDeleteFailureModal(false);
-        setIsRestoreSuccessModal(false);
-        setIsRestoreFailureModal(false);
-        setIsConfirmDeleteModal(false);
+        setModalType(null);
     };
 
     const handleFilter = () => {
@@ -325,7 +317,7 @@ function Trash() {
 
             {isLoading && <Spinner />}
 
-            {isRestoreSuccessModal && (
+            {modalType === 'restoreSuccess' && (
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
@@ -336,7 +328,7 @@ function Trash() {
                 />
             )}
 
-            {isRestoreFailureModal && (
+            {modalType === 'restoreFailed' && (
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'
@@ -347,7 +339,7 @@ function Trash() {
                 />
             )}
 
-            {isConfirmDeleteModal && (
+            {modalType === 'confirmDelete' && (
                 <Modal
                     icon={<WarningIcon className='h-[40px]!' />}
                     color='var(--color-warning)'
@@ -362,7 +354,7 @@ function Trash() {
                 />
             )}
 
-            {isDeleteSuccessModal && (
+            {modalType === 'deleteSuccess' && (
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
@@ -373,11 +365,11 @@ function Trash() {
                 />
             )}
 
-            {isDeleteFailureModal && (
+            {modalType === 'deleteFailed' && (
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'
-                    message={t('Failed to restore this driver!')}
+                    message={t('Failed to delete this driver!')}
                     description={errorMessage}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCloseModal}

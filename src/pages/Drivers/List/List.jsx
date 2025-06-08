@@ -24,9 +24,10 @@ import { createAxios } from '~/createInstance';
 import { addToast } from '~/redux/toastSlice';
 
 function List() {
-    const [isConfirmMoveToTrashModal, setIsConfirmMoveToTrashModal] = useState(false);
-    const [isMoveTrashSuccessModal, setIsMoveTrashSuccessModal] = useState(false);
-    const [isMoveTrashFailureModal, setIsMoveTrashFailureModal] = useState(false);
+    // const [isConfirmMoveToTrashModal, setIsConfirmMoveToTrashModal] = useState(false);
+    // const [isMoveTrashSuccessModal, setIsMoveTrashSuccessModal] = useState(false);
+    // const [isMoveTrashFailureModal, setIsMoveTrashFailureModal] = useState(false);
+    const [modalType, setModalType] = useState(null);
     const [selectedDriverId, setSelectedDriverId] = useState(null);
     const [originalDrivers, setOriginalDrivers] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -66,12 +67,12 @@ function List() {
     };
 
     const handleClickTrashButton = (id) => {
-        setIsConfirmMoveToTrashModal(true);
+        setModalType('confirmMoveToTrash');
         setSelectedDriverId(id);
     };
 
     const handleMoveToTrash = async () => {
-        setIsConfirmMoveToTrashModal(false);
+        setModalType(null);
         setIsLoading(true);
 
         try {
@@ -82,22 +83,20 @@ function List() {
                 setOriginalDrivers((prevDrivers) =>
                     prevDrivers.filter((driver) => driver.idDriver !== selectedDriverId),
                 );
-                setIsMoveTrashSuccessModal(true);
+                setModalType('moveTrashSuccess');
                 setSelectedDriverId(null);
             }, 800);
         } catch (error) {
             const errorMessage = error?.response?.data?.message || 'Something went wrong!';
             setErrorMessage(errorMessage);
             setIsLoading(false);
-            setIsMoveTrashFailureModal(true);
+            setModalType('moveTrashFailed');
             console.error('API call failed:', error);
         }
     };
 
     const handleCloseModal = () => {
-        setIsConfirmMoveToTrashModal(false);
-        setIsMoveTrashSuccessModal(false);
-        setIsMoveTrashFailureModal(false);
+        setModalType(null);
     };
 
     if (isLoading) return <Spinner />;
@@ -379,7 +378,7 @@ function List() {
 
             {isLoading && <Spinner />}
 
-            {isConfirmMoveToTrashModal && (
+            {modalType === 'confirmMoveToTrash' && (
                 <Modal
                     icon={<WarningIcon className='h-[40px]!' />}
                     color='var(--color-warning)'
@@ -394,7 +393,7 @@ function List() {
                 />
             )}
 
-            {isMoveTrashSuccessModal && (
+            {modalType === 'moveTrashSuccess' && (
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
@@ -405,7 +404,7 @@ function List() {
                 />
             )}
 
-            {isMoveTrashFailureModal && (
+            {modalType === 'moveTrashFailed' && (
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'
