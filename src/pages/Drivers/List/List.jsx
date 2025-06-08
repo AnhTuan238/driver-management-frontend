@@ -24,17 +24,16 @@ import { createAxios } from '~/createInstance';
 import { addToast } from '~/redux/toastSlice';
 
 function List() {
-    // const [isConfirmMoveToTrashModal, setIsConfirmMoveToTrashModal] = useState(false);
-    // const [isMoveTrashSuccessModal, setIsMoveTrashSuccessModal] = useState(false);
-    // const [isMoveTrashFailureModal, setIsMoveTrashFailureModal] = useState(false);
-    const [modalType, setModalType] = useState(null);
     const [selectedDriverId, setSelectedDriverId] = useState(null);
     const [originalDrivers, setOriginalDrivers] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const [modalType, setModalType] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [filterDate, setFilterDate] = useState('');
-    const [filterZone, setFilterZone] = useState('');
-    const [filterRole, setFilterRole] = useState('');
+    const [filters, setFilters] = useState({
+        date: '',
+        zone: '',
+        role: '',
+    });
     const [drivers, setDrivers] = useState([]);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -104,24 +103,24 @@ function List() {
     const handleFilter = () => {
         let filtered = [...originalDrivers];
 
-        if (filterZone === 'Ha Noi' || filterZone === 'Ho Chi Minh') {
-            filtered = filtered.filter((driver) => driver.zone === filterZone);
-        } else if (filterZone === 'Others') {
+        if (filters.zone === 'Ha Noi' || filters.zone === 'Ho Chi Minh') {
+            filtered = filtered.filter((driver) => driver.zone === filters.zone);
+        } else if (filters.zone === 'Others') {
             filtered = filtered.filter((driver) => driver.zone !== 'Ha Noi' && driver.zone !== 'Ho Chi Minh');
         }
 
-        if (filterRole) {
-            filtered = filtered.filter((driver) => (filterRole === 'Admin' ? driver.admin : !driver.admin));
+        if (filters.role) {
+            filtered = filtered.filter((driver) => (filters.role === 'Admin' ? driver.admin : !driver.admin));
         }
 
-        if (filterDate) {
+        if (filters.date) {
             const now = new Date();
             filtered = filtered.filter((driver) => {
                 const addedDate = new Date(driver.createdAt);
-                if (filterDate === 'This Month') {
+                if (filters.date === 'This Month') {
                     return addedDate.getMonth() === now.getMonth() && addedDate.getFullYear() === now.getFullYear();
                 }
-                if (filterDate === 'This Year') {
+                if (filters.date === 'This Year') {
                     return addedDate.getFullYear() === now.getFullYear();
                 }
                 return true;
@@ -209,7 +208,7 @@ function List() {
                         <div className='filter-item'>
                             {t('Date added:')}
                             <select
-                                onChange={(e) => setFilterDate(e.target.value)}
+                                onChange={(e) => setFilters({ ...filters, date: e.target.value })}
                                 className='focus:outline-none w-16 truncate'
                             >
                                 <option value=''>{t('All')}</option>
@@ -220,7 +219,7 @@ function List() {
                         <div className='filter-item'>
                             {t('Zone')}:
                             <select
-                                onChange={(e) => setFilterZone(e.target.value)}
+                                onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
                                 className='focus:outline-none w-16 truncate'
                             >
                                 <option value=''>{t('All')}</option>
@@ -232,7 +231,7 @@ function List() {
                         <div className='filter-item'>
                             {t('Role')}:
                             <select
-                                onChange={(e) => setFilterRole(e.target.value)}
+                                onChange={(e) => setFilters({ ...filters, role: e.target.value })}
                                 className='focus:outline-none w-16 truncate'
                             >
                                 <option value=''>{t('All')}</option>
