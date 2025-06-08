@@ -13,6 +13,7 @@ import {
     WarningIcon,
     TrashIcon,
     TickIconCustom,
+    CloseIcon,
 } from '~/components/UiComponents/Icon';
 import variants from '~/components/UiComponents/Button/variants';
 import { getAllDrivers, softDeleteDriver } from '~/api/driver';
@@ -397,7 +398,7 @@ function List() {
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
-                    message={t('The driver has been moved to the trash!')}
+                    message={t('The driver has been moved to the trash.')}
                     description={t("Click 'Confirm' to return to the driver list page.")}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCloseModal}
@@ -408,7 +409,7 @@ function List() {
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'
-                    message={t('Failed to moved this driver to the trash!')}
+                    message={t('Failed to moved this driver to the trash.')}
                     description={errorMessage}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCloseModal}

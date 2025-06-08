@@ -5,8 +5,7 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 
 import { getAllDriversInTrash, restoreDriver, forceDeleteDriver } from '~/api/driver';
-import { ArrowBack, WarningIcon, CloseIcon } from '~/components/UiComponents/Icon';
-import { TickIconCustom } from '~/components/UiComponents/Icon/Icon';
+import { ArrowBack, WarningIcon, CloseIcon, TickIconCustom } from '~/components/UiComponents/Icon';
 import variants from '~/components/UiComponents/Button/variants';
 import { loginSuccess } from '~/redux/authenticationSlice';
 import Spinner from '~/components/UiComponents/Spinner';
@@ -324,7 +323,7 @@ function Trash() {
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
-                    message='The driver has been restored!'
+                    message='The driver has been restored.'
                     description="The driver has been restored. Click 'Confirm' to continue editing!"
                     primaryActionLabel='Confirm'
                     onPrimaryAction={handleCloseModal}
@@ -335,7 +334,7 @@ function Trash() {
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'
-                    message='Failed to restore this driver!'
+                    message='Failed to restore this driver.'
                     description={errorMessage}
                     primaryActionLabel='Confirm'
                     onPrimaryAction={handleCloseModal}
@@ -361,7 +360,7 @@ function Trash() {
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
-                    message={t('The driver has been deleted!')}
+                    message={t('The driver has been deleted.')}
                     description={t("Click 'Confirm' to return to the driver list.")}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCloseModal}
@@ -372,7 +371,7 @@ function Trash() {
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'
-                    message={t('Failed to delete this driver!')}
+                    message={t('Failed to delete this driver.')}
                     description={errorMessage}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCloseModal}
