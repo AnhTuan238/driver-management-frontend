@@ -86,7 +86,8 @@ function List() {
                 setSelectedDriverId(null);
             }, 800);
         } catch (error) {
-            const errorMessage = error?.response?.data?.message || 'Something went wrong!';
+            const errorMessage =
+                error?.response?.data?.message || 'Something went wrong. Please try again in a few seconds.';
             setErrorMessage(errorMessage);
             setIsLoading(false);
             setModalType('moveTrashFailed');

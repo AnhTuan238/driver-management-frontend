@@ -21,9 +21,6 @@ function Trash() {
     const [errorMessage, setErrorMessage] = useState('');
     const [modalType, setModalType] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    // const [filterDate, setFilterDate] = useState('');
-    // const [filterZone, setFilterZone] = useState('');
-    // const [filterRole, setFilterRole] = useState('');
     const [filters, setFilters] = useState({
         date: '',
         zone: '',
@@ -91,7 +88,8 @@ function Trash() {
                 setSelectedDriverId(null);
             }, 800);
         } catch (error) {
-            const errorMessage = error?.response?.data?.message || 'Something went wrong';
+            const errorMessage =
+                error?.response?.data?.message || 'Something went wrong. Please try again in a few seconds.';
             setErrorMessage(errorMessage);
             setIsLoading(false);
             setModalType('deleteFailed');
@@ -103,35 +101,6 @@ function Trash() {
         setModalType(null);
     };
 
-    // const handleFilter = () => {
-    //     let filtered = [...originalDrivers];
-
-    //     if (filterZone === 'Ha Noi' || filterZone === 'Ho Chi Minh') {
-    //         filtered = filtered.filter((driver) => driver.zone === filterZone);
-    //     } else if (filterZone === 'Others') {
-    //         filtered = filtered.filter((driver) => driver.zone !== 'Ha Noi' && driver.zone !== 'Ho Chi Minh');
-    //     }
-
-    //     if (filterRole) {
-    //         filtered = filtered.filter((driver) => (filterRole === 'Admin' ? driver.admin : !driver.admin));
-    //     }
-
-    //     if (filterDate) {
-    //         const now = new Date();
-    //         filtered = filtered.filter((driver) => {
-    //             const addedDate = new Date(driver.createdAt);
-    //             if (filterDate === 'This Month') {
-    //                 return addedDate.getMonth() === now.getMonth() && addedDate.getFullYear() === now.getFullYear();
-    //             }
-    //             if (filterDate === 'This Year') {
-    //                 return addedDate.getFullYear() === now.getFullYear();
-    //             }
-    //             return true;
-    //         });
-    //     }
-
-    //     setDrivers(filtered);
-    // };
     const handleFilter = () => {
         let filtered = [...originalDrivers];
 
