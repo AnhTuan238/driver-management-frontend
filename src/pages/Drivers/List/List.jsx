@@ -30,12 +30,12 @@ function List() {
     const [errorMessage, setErrorMessage] = useState('');
     const [modalType, setModalType] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [drivers, setDrivers] = useState([]);
     const [filters, setFilters] = useState({
         date: '',
         zone: '',
         role: '',
     });
-    const [drivers, setDrivers] = useState([]);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -88,7 +88,7 @@ function List() {
             }, 800);
         } catch (error) {
             const errorMessage =
-                error?.response?.data?.message || 'Something went wrong. Please try again in a few seconds.';
+                error?.response?.data?.message || 'Something went wrong. Please try again in a few seconds!';
             setErrorMessage(errorMessage);
             setIsLoading(false);
             setModalType('moveTrashFailed');
