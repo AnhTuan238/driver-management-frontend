@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import Skeleton from 'react-loading-skeleton';
 import { useEffect, useState } from 'react';
-import isEqual from 'lodash/isEqual';
 import { Helmet } from 'react-helmet';
 
 import {
@@ -29,7 +30,8 @@ function List() {
     const [originalDrivers, setOriginalDrivers] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [modalType, setModalType] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isFetchData, setIsFetchData] = useState(true);
     const [drivers, setDrivers] = useState([]);
     const [filters, setFilters] = useState({
         date: '',
@@ -44,6 +46,8 @@ function List() {
     let axiosJWT = createAxios(driver, dispatch, loginSuccess);
 
     useEffect(() => {
+        let timeout;
+
         const fetchDrivers = async () => {
             try {
                 const response = await getAllDrivers();
@@ -51,15 +55,16 @@ function List() {
                 setOriginalDrivers(response);
             } catch (error) {
                 console.error('API call failed:', error);
+            } finally {
+                timeout = setTimeout(() => {
+                    setIsFetchData(false);
+                }, 800);
             }
         };
 
         fetchDrivers();
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 500);
 
-        return () => clearTimeout(timer);
+        return () => clearTimeout(timeout);
     }, []);
 
     const handleClickEditButton = (id) => {
@@ -99,8 +104,6 @@ function List() {
     const handleCloseModal = () => {
         setModalType(null);
     };
-
-    if (isLoading) return <Spinner />;
 
     const handleFilter = () => {
         let filtered = [...originalDrivers];
@@ -145,7 +148,7 @@ function List() {
                     <div className='flex items-center gap-2 mb-1'>
                         <h2 className='text-sm font-semibold dark:text-white-dark'>{t('Drivers')}</h2>
                         <span className='flex items-center justify-center p-2.5 w-2 h-2 text-sm text-primary font-bold rounded-full border-2 border-secondary'>
-                            {originalDrivers.length}
+                            {isFetchData ? <Skeleton circle height='100%' width='15px' /> : originalDrivers.length}
                         </span>
                     </div>
                     <p className='text-text text-sm dark:text-white-dark'>{t('Manage your drivers')}</p>
@@ -164,7 +167,13 @@ function List() {
                         <p>{t('Admin')}</p>
                     </div>
                     <div>
-                        <span>{originalDrivers.filter((driver) => driver.admin).length}</span>
+                        <span>
+                            {isFetchData ? (
+                                <Skeleton height={20} width='20%' />
+                            ) : (
+                                originalDrivers.filter((driver) => driver.admin).length
+                            )}
+                        </span>
                     </div>
                 </div>
 
@@ -175,7 +184,13 @@ function List() {
                         <p>{t('Driver')}</p>
                     </div>
                     <div>
-                        <span>{originalDrivers.filter((driver) => !driver.admin).length}</span>
+                        <span>
+                            {isFetchData ? (
+                                <Skeleton height={20} width='20%' />
+                            ) : (
+                                originalDrivers.filter((driver) => !driver.admin).length
+                            )}
+                        </span>
                     </div>
                 </div>
 
@@ -186,7 +201,13 @@ function List() {
                         <p>{t('Busy')}</p>
                     </div>
                     <div>
-                        <span>{originalDrivers.filter((driver) => driver.status === 'Busy').length}</span>
+                        <span>
+                            {isFetchData ? (
+                                <Skeleton height={20} width='20%' />
+                            ) : (
+                                originalDrivers.filter((driver) => driver.status === 'Busy').length
+                            )}
+                        </span>
                     </div>
                 </div>
 
@@ -197,7 +218,13 @@ function List() {
                         <p>{t('Offline')}</p>
                     </div>
                     <div>
-                        <span>{originalDrivers.filter((driver) => driver.status === 'Offline').length}</span>
+                        <span>
+                            {isFetchData ? (
+                                <Skeleton height={20} width='20%' />
+                            ) : (
+                                originalDrivers.filter((driver) => driver.status === 'Offline').length
+                            )}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -270,7 +297,7 @@ function List() {
                         {/* HEAD */}
                         <thead className='bg-border dark:bg-background-dark'>
                             <tr>
-                                <th className='table-item w-13'>#</th>
+                                <th className='table-item w-13 text-center'>#</th>
                                 <th className='table-item w-61'>{t('Name')}</th>
                                 <th className='table-item w-41'>{t('License Plate')}</th>
                                 <th className='table-item w-43'>{t('ID')}</th>
@@ -295,32 +322,57 @@ function List() {
                             ) : (
                                 drivers.map((driver, index) => (
                                     <tr key={index}>
-                                        <td className='table-item w-13'>{index + 1}</td>
+                                        <td className='table-item w-13 text-center'>
+                                            {isFetchData ? <Skeleton height={20} /> : index + 1}
+                                        </td>
                                         <td className='table-item gap-1 w-61'>
                                             <div className='flex items-center gap-2 dark:text-white-dark'>
-                                                <img
-                                                    className='size-8 rounded-full object-cover'
-                                                    src={driver.avatar}
-                                                    alt='Avatar'
-                                                />
-                                                {`${driver.lastName} ${driver.firstName}`}
+                                                {isFetchData ? (
+                                                    <>
+                                                        <Skeleton circle width={32} height={32} />
+                                                        <Skeleton width={170} height={20} />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <img
+                                                            className='size-8 rounded-full object-cover'
+                                                            src={driver.avatar}
+                                                            alt='Avatar'
+                                                        />
+                                                        {driver.lastName} {driver.firstName}
+                                                    </>
+                                                )}
                                             </div>
                                         </td>
-                                        <td className='table-item w-41'>{driver.licensePlate}</td>
-                                        <td className='table-item w-43'>{driver.idDriver}</td>
-                                        <td className='table-item w-38'>{driver.phone}</td>
-                                        <td className='table-item w-39'>{driver.dateOfBirth}</td>
-                                        <td className='table-item w-46'>{driver.zone}</td>
+                                        <td className='table-item w-41'>
+                                            {isFetchData ? <Skeleton height={20} /> : driver.licensePlate}
+                                        </td>
+                                        <td className='table-item w-43'>
+                                            {isFetchData ? <Skeleton height={20} /> : driver.idDriver}
+                                        </td>
+                                        <td className='table-item w-38'>
+                                            {isFetchData ? <Skeleton height={20} /> : driver.phone}
+                                        </td>
+                                        <td className='table-item w-39'>
+                                            {isFetchData ? <Skeleton height={20} /> : driver.dateOfBirth}
+                                        </td>
+                                        <td className='table-item w-46'>
+                                            {isFetchData ? <Skeleton height={20} /> : driver.zone}
+                                        </td>
                                         <td className='table-item text-center w-25'>
-                                            <span
-                                                className={
-                                                    (driver.admin
-                                                        ? 'text-red-500 bg-red-100'
-                                                        : 'text-gray-500 bg-gray-100') + ' p-0.5 rounded-sm'
-                                                }
-                                            >
-                                                {t(driver.admin ? 'Admin' : 'Driver')}
-                                            </span>
+                                            {isFetchData ? (
+                                                <Skeleton height={20} />
+                                            ) : (
+                                                <span
+                                                    className={
+                                                        (driver.admin
+                                                            ? 'text-red-500 bg-red-100'
+                                                            : 'text-gray-500 bg-gray-100') + ' p-0.5 rounded-sm'
+                                                    }
+                                                >
+                                                    {t(driver.admin ? 'Admin' : 'Driver')}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className='table-item w-37'>
                                             <div className='flex justify-evenly gap-4'>
