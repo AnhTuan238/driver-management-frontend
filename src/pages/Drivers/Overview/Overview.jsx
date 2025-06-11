@@ -131,7 +131,7 @@ function Overview() {
                                                 {driver.healthData.at(-1).spo2 ? (
                                                     driver.healthData.at(-1).spo2
                                                 ) : (
-                                                    <span className='text-gray-400'>No data available</span>
+                                                    <span className='text-gray-400'>{t('No data available')}</span>
                                                 )}
                                             </span>
                                         </div>
@@ -148,7 +148,7 @@ function Overview() {
                                                 {driver.healthData.at(-1).pulse ? (
                                                     driver.healthData.at(-1).pulse
                                                 ) : (
-                                                    <span className='text-gray-400'>No data available</span>
+                                                    <span className='text-gray-400'>{t('No data available')}</span>
                                                 )}
                                             </span>
                                         </div>
@@ -167,7 +167,9 @@ function Overview() {
                                 className='flex gap-2 items-center justify-center'
                                 onClick={() => handleExpand(driver.idDriver)}
                             >
-                                <span className='text-base text-black font-semibold'>{t('View More')}</span>
+                                <span className='text-base text-black font-semibold dark:text-white'>
+                                    {t('View More')}
+                                </span>
                                 {expandedDrivers.includes(driver.idDriver) ? (
                                     <ArrowUp className='flex items-center size-5 p-0.5 bg-primary text-white rounded-full' />
                                 ) : (

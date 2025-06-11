@@ -86,7 +86,7 @@
     "This driver will be moved to the Trash. You can restore or permanently delete them later.": "このドライバーはゴミ箱に移動されます。後で復元または完全に削除することができます。",
     "Move to trash": "ゴミ箱に移動",
     "Cancel": "キャンセル",
-    "The driver has been moved to the trash!": "ドライバーがゴミ箱に移動されました！",
+    "The driver has been moved to the trash!": "ドライバーがゴミ箱に移動されました",
     "Click 'Confirm' to return to the driver list page.": "「確認」をクリックしてドライバー一覧ページに戻ってください。",
     "Confirm": "確認",
     "Failed to moved this driver to the trash!": "このドライバーをゴミ箱に移動できませんでした！",
@@ -146,5 +146,7 @@
     "Warning": "警告",
     "Only administrators are allowed to perform this action": "この操作を実行できるのは管理者のみです",
     "No drivers found": "ドライバーが見つかりません",
-    "You don't have permission to perform this action!": "この操作を実行する権限がありません！"
+    "You don't have permission to perform this action!": "この操作を実行する権限がありません！",
+    "DriveBot": "DriveBot",
+    "Ask DriveBot about a driver...": "ドライバーについてDriveBotに質問..."
 }

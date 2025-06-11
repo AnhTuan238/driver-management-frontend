@@ -10,7 +10,7 @@ import {
 } from '~/redux/authenticationSlice';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-export const loginRequest = async (driver, dispatchEvent, navigate) => {
+export const loginRequest = async (driver, dispatchEvent) => {
     dispatchEvent(loginStart());
     try {
         const response = await axios.post(`${BASE_URL}/authentication/login`, driver, { withCredentials: true });
@@ -21,7 +21,7 @@ export const loginRequest = async (driver, dispatchEvent, navigate) => {
     }
 };
 
-export const logoutRequest = async (driver, dispatch, navigate, accessToken, axiosJWT) => {
+export const logoutRequest = async (driver, dispatch, accessToken, axiosJWT) => {
     dispatch(logoutStart());
     try {
         await axiosJWT.post(`${BASE_URL}/authentication/logout`, driver, {

@@ -1,8 +1,8 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 import Tippy from '@tippyjs/react/headless';
+import { useState } from 'react';
 
 import logo from '~/assets/images/logo.png';
 import logoDark from '~/assets/images/logo-dark.png';
@@ -21,24 +21,22 @@ import {
     TrashIcon,
 } from '~/components/UiComponents/Icon';
 import DriverList from '~/components/UiComponents/DriverList/DriverList';
+import { logoutRequest, loginRequest } from '~/api/authentication';
 import { logoutSuccess } from '~/redux/authenticationSlice';
 import useKeyboardShortcuts from '~/hooks/useShortCuts';
 import Modal from '~/components/LayoutComponents/Modal';
 import Spinner from '~/components/UiComponents/Spinner';
 import Search from '~/components/UiComponents/Search';
 import Button from '~/components/UiComponents/Button';
-import { logoutRequest } from '~/api/authentication';
-import { loginRequest } from '~/api/authentication';
 import { createAxios } from '~/createInstance';
 import useTheme from '~/hooks/useTheme';
 
 function Navbar() {
-    const [isLoginSuccessModal, setIsLoginSuccessModal] = useState(false);
-    const [isLoginFailureModal, setIsLoginFailureModal] = useState(false);
     const [isSearchModal, setIsSearchModal] = useState(false);
     const [isMobileMenu, setIsMobileMenu] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [modalType, setModalType] = useState(null);
     const [password, setPassword] = useState('');
     const { toggleTheme, theme } = useTheme();
     const { t, i18n } = useTranslation();
@@ -64,16 +62,16 @@ function Navbar() {
             idDriver: id,
             password: password,
         };
-        const loginPromise = loginRequest(newDriver, dispatch, navigate);
+        const loginPromise = loginRequest(newDriver, dispatch);
         const wait800ms = new Promise((resolve) => setTimeout(resolve, 800));
         try {
             await Promise.all([loginPromise, wait800ms]);
             setIsLoading(false);
-            setIsLoginSuccessModal(true);
+            setModalType('loginSuccess');
         } catch (err) {
             await wait800ms;
             setIsLoading(false);
-            setIsLoginFailureModal(true);
+            setModalType('loginFailed');
             setErrorMessage(err.response?.data?.message || 'Try again!');
         }
     };
@@ -81,17 +79,16 @@ function Navbar() {
     const handleLogout = () => {
         setId('');
         setPassword('');
-        logoutRequest(driver, dispatch, navigate, accessToken, axiosJWT);
+        logoutRequest(driver, dispatch, accessToken, axiosJWT);
     };
 
     const handleConfirm = () => {
-        setIsLoginSuccessModal(false);
+        setModalType(null);
         navigate('/drivers/list');
     };
 
     const handleCloseModal = () => {
-        setIsLoginSuccessModal(false);
-        setIsLoginFailureModal(false);
+        setModalType(null);
     };
 
     return (
@@ -357,7 +354,7 @@ function Navbar() {
 
             {isLoading && <Spinner />}
 
-            {isLoginSuccessModal && (
+            {modalType === 'loginSuccess' && (
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
@@ -368,7 +365,7 @@ function Navbar() {
                 />
             )}
 
-            {isLoginFailureModal && (
+            {modalType === 'loginFailed' && (
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'

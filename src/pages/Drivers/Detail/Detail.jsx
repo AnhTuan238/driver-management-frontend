@@ -3,14 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 
-import {
-    IdIcon,
-    AddressIcon,
-    VehicleIcon,
-    ProfileIcon,
-    OverviewIcon,
-    TimeIcon,
-} from '~/components/UiComponents/Icon/Icon';
+import { IdIcon, AddressIcon, VehicleIcon, ProfileIcon, TimeIcon } from '~/components/UiComponents/Icon/Icon';
 import Spinner from '~/components/UiComponents/Spinner';
 import Chart from '~/components/UiComponents/Chart';
 import { getDetailDriver } from '~/api/driver';

@@ -56,7 +56,7 @@ function Login() {
             password: values.password,
         };
 
-        const loginPromise = loginRequest(newDriver, dispatch, navigate);
+        const loginPromise = loginRequest(newDriver, dispatch);
         const wait800ms = new Promise((resolve) => setTimeout(resolve, 800));
 
         try {

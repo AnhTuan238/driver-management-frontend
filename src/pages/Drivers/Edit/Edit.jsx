@@ -12,10 +12,10 @@ import Spinner from '~/components/UiComponents/Spinner';
 import Modal from '~/components/LayoutComponents/Modal';
 import { createAxios } from '~/createInstance';
 import { getDetailDriver, updateDriver } from '~/api/driver';
+import { runWithMinDelay } from '~/utils/artificialLatency';
 
 function EditDriver() {
-    const [isUpdateSuccessModal, setIsUpdateSuccessModal] = useState(false);
-    const [isUpdateFailureModal, setIsUpdateFailureModal] = useState(false);
+    const [modalType, setModalType] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [driver, setDriver] = useState(null);
@@ -108,32 +108,27 @@ function EditDriver() {
 
     const handleUpdate = async (values) => {
         setIsLoading(true);
-        setTimeout(async () => {
-            try {
-                await updateDriver(id, values, driverCurrent?.accessToken, axiosJWT);
-                setIsLoading(false);
-                setIsUpdateSuccessModal(true);
-            } catch (error) {
-                const errorMessage = error?.response?.data?.message || error?.response?.data || 'Something went wrong!';
-                setErrorMessage(errorMessage);
-                setIsLoading(false);
-                setIsUpdateFailureModal(true);
-                console.error('API call Failed:', error);
-            }
-        }, 800);
+        try {
+            await runWithMinDelay(() => updateDriver(id, values, driverCurrent?.accessToken, axiosJWT), 800);
+            setModalType('updateSuccess');
+        } catch (error) {
+            const errorMessage = error?.response?.data?.message || error?.message || 'Something went wrong!';
+
+            setErrorMessage(errorMessage);
+            setModalType('updateFailed');
+            console.error('API call Failed:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleConfirm = () => {
-        setIsUpdateSuccessModal(false);
+        setModalType(null);
         navigate('/drivers/list');
     };
 
-    const handleContinueEdit = () => {
-        setIsUpdateSuccessModal(false);
-    };
-
-    const handleCancel = () => {
-        setIsUpdateFailureModal(false);
+    const handleCloseModal = () => {
+        setModalType(null);
     };
 
     return (
@@ -157,7 +152,7 @@ function EditDriver() {
 
             {isLoading && <Spinner />}
 
-            {isUpdateSuccessModal && (
+            {modalType === 'updateSuccess' && (
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
@@ -168,18 +163,18 @@ function EditDriver() {
                     primaryActionLabel={t('Confirm')}
                     secondaryActionLabel={t('Continue editing')}
                     onPrimaryAction={handleConfirm}
-                    onSecondaryAction={handleContinueEdit}
+                    onSecondaryAction={handleCloseModal}
                 />
             )}
 
-            {isUpdateFailureModal && (
+            {modalType === 'updateFailed' && (
                 <Modal
                     icon={<ErrorIcon />}
                     color='var(--color-failure)'
                     message={t('Failed to edit driver!')}
                     description={errorMessage}
                     primaryActionLabel={t('Confirm')}
-                    onPrimaryAction={handleCancel}
+                    onPrimaryAction={handleCloseModal}
                 />
             )}
         </>

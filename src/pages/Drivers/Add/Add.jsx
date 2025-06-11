@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 
 import { TickIconCustom, ErrorIcon } from '~/components/UiComponents/Icon';
 import CustomForm from '~/components/UiComponents/CustomForm';
+import { runWithMinDelay } from '~/utils/artificialLatency';
 import { loginSuccess } from '~/redux/authenticationSlice';
 import Spinner from '~/components/UiComponents/Spinner';
 import Modal from '~/components/LayoutComponents/Modal';
@@ -14,10 +15,9 @@ import { createAxios } from '~/createInstance';
 import { addDriver } from '~/api/driver';
 
 function Add() {
-    const [isAddSuccessModal, setIsAddSuccessModal] = useState(false);
-    const [isAddFailureModal, setIsAddFailureModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [modalType, setModalType] = useState(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -92,28 +92,27 @@ function Add() {
 
     const handleAdd = async (values) => {
         setIsLoading(true);
-        setTimeout(async () => {
-            try {
-                await addDriver(values, driver?.accessToken, axiosJWT);
-                setIsLoading(false);
-                setIsAddSuccessModal(true);
-            } catch (error) {
-                const errorMessage = error?.response?.data?.message || error?.response?.data || 'Something went wrong!';
-                setErrorMessage(errorMessage);
-                setIsLoading(false);
-                setIsAddFailureModal(true);
-                console.error('API call Failed:', error);
-            }
-        }, 800);
+        try {
+            await runWithMinDelay(() => addDriver(values, driver?.accessToken, axiosJWT), 800);
+            setModalType('addSuccess');
+        } catch (error) {
+            const errMessage =
+                error?.response?.data?.message || 'Something went wrong. Please try again in a few seconds!';
+            setErrorMessage(errMessage);
+            setModalType('addFailed');
+            console.error('API call Failed:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleConfirm = () => {
-        setIsAddSuccessModal(false);
+        setModalType(null);
         navigate('/drivers/list');
     };
 
     const handleCancel = () => {
-        setIsAddFailureModal(false);
+        setModalType(null);
     };
 
     return (
@@ -134,23 +133,23 @@ function Add() {
 
             {isLoading && <Spinner />}
 
-            {isAddSuccessModal && (
+            {modalType === 'addSuccess' && (
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
-                    message={t('Driver added successfully!')}
+                    message={t('Driver added successfully.')}
                     description={t("Click 'Confirm' to return to the driver list.")}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleConfirm}
                 />
             )}
 
-            {isAddFailureModal && (
+            {modalType === 'addFailed' && (
                 <Modal
                     icon={<ErrorIcon />}
                     color='var(--color-failure)'
-                    message={t('Failed to add driver!')}
-                    description={t(errorMessage)}
+                    message={t('Failed to add driver.')}
+                    description={errorMessage}
                     primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCancel}
                 />

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Skeleton from 'react-loading-skeleton';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 
 import { getAllDriversInTrash, restoreDriver, forceDeleteDriver } from '~/api/driver';
@@ -14,6 +14,12 @@ import Modal from '~/components/LayoutComponents/Modal';
 import Button from '~/components/UiComponents/Button';
 import { createAxios } from '~/createInstance';
 import { addToast } from '~/redux/toastSlice';
+
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+
+ModuleRegistry.registerModules([AllCommunityModule]);
+import { AgGridReact } from 'ag-grid-react';
+import { themeQuartz } from 'ag-grid-community';
 
 function Trash() {
     const [selectedDriverId, setSelectedDriverId] = useState(null);
@@ -33,6 +39,158 @@ function Trash() {
     const driver = useSelector((state) => state.authentication.login?.currentDriver);
     const isAdmin = driver?.admin;
     let axiosJWT = createAxios(driver, dispatch, loginSuccess);
+    const [rowData, setRowData] = useState([]);
+    const defaultColDef = useMemo(() => {
+        return {
+            filter: true,
+            flex: 1,
+        };
+    }, []);
+    const columnDefsSkeleton = [
+        {
+            valueGetter: (p) => p.node.rowIndex + 1,
+            headerName: '#',
+            filter: false,
+            flex: 0.5,
+            headerClass: 'custom-center-header',
+            cellStyle: { textAlign: 'center' },
+        },
+        {
+            cellRenderer: (params) => (
+                <div className='flex items-center justify-center'>
+                    {params.data.avatar && (
+                        <img src={params.data.avatar} alt='Avatar' className='w-8 h-8 rounded-full' />
+                    )}
+                </div>
+            ),
+            headerName: 'Avatar',
+            filter: false,
+            flex: 0.5,
+            cellStyle: { alignContent: 'center' },
+        },
+        {
+            headerName: 'Last Name',
+            flex: 0.8,
+            cellRenderer: () => <Skeleton width={50} height={15} />,
+        },
+        { headerName: 'First Name', cellRenderer: () => <Skeleton width={100} height={15} /> },
+        { headerName: 'License Plate', cellRenderer: () => <Skeleton width={90} height={15} /> },
+        { headerName: 'Mobile', cellRenderer: () => <Skeleton width={90} height={15} /> },
+        { headerName: 'Date of Birth', cellRenderer: () => <Skeleton width={80} height={15} /> },
+        { headerName: 'Zone', cellRenderer: () => <Skeleton width={100} height={15} /> },
+        {
+            cellRenderer: () => <Skeleton width={50} height={15} />,
+            headerName: 'Role',
+            flex: 0.7,
+        },
+        {
+            headerName: '',
+            field: 'idDriver',
+            cellRenderer: () => {
+                return (
+                    <div className='flex justify-evenly gap-4'>
+                        <Button className={!isAdmin ? variants.notAllowedBtn : 'text-primary cursor-pointer'}>
+                            {t('Restore')}
+                        </Button>
+                        <Button className={!isAdmin ? variants.notAllowedBtn : 'text-red-500'}>{t('Delete')}</Button>
+                    </div>
+                );
+            },
+
+            filter: false,
+        },
+    ];
+    const [columnDefs] = useState([
+        {
+            valueGetter: (p) => p.node.rowIndex + 1,
+            headerName: '#',
+            filter: false,
+            flex: 0.5,
+            headerClass: 'custom-center-header',
+            cellStyle: { textAlign: 'center' },
+        },
+        {
+            cellRenderer: (params) => (
+                <div className='flex items-center justify-center'>
+                    {params.data.avatar && (
+                        <img src={params.data.avatar} alt='Avatar' className='w-8 h-8 rounded-full' />
+                    )}
+                </div>
+            ),
+            headerName: t('Avatar'),
+            filter: false,
+            flex: 0.5,
+            cellStyle: { alignContent: 'center' },
+        },
+        {
+            field: 'lastName',
+            headerName: t('Last Name'),
+            flex: 0.8,
+        },
+        { field: 'firstName', headerName: t('First Name') },
+        { field: 'licensePlate', headerName: t('License Plate') },
+        { field: 'phone', headerName: t('Mobile') },
+        { field: 'dateOfBirth', headerName: t('Date of Birth') },
+        { field: 'zone', headerName: t('Zone') },
+        {
+            cellRenderer: (params) => (
+                <span
+                    className={`${
+                        params.data.admin ? 'text-red-500 bg-red-100' : 'text-gray-500 bg-gray-100'
+                    } p-0.5 rounded-sm`}
+                >
+                    {params.data.admin ? 'Admin' : 'Driver'}
+                </span>
+            ),
+            headerName: t('Role'),
+            flex: 0.7,
+        },
+        {
+            headerName: '',
+            field: 'idDriver',
+            cellRenderer: (params) => {
+                return (
+                    <div className='flex justify-evenly gap-4'>
+                        <Button
+                            className={!isAdmin ? variants.notAllowedBtn : 'text-primary cursor-pointer'}
+                            onClick={
+                                isAdmin
+                                    ? () => handleRestore(params.data.idDriver)
+                                    : () =>
+                                          dispatch(
+                                              addToast({
+                                                  title: 'Warning',
+                                                  message: 'Only administrators are allowed to perform this action',
+                                                  type: 'warning',
+                                              }),
+                                          )
+                            }
+                        >
+                            {t('Restore')}
+                        </Button>
+                        <Button
+                            className={!isAdmin ? variants.notAllowedBtn : 'text-red-500'}
+                            onClick={
+                                isAdmin
+                                    ? () => handleClickDeleteButton(params.data.idDriver)
+                                    : () =>
+                                          dispatch(
+                                              addToast({
+                                                  title: 'Warning',
+                                                  message: 'Only administrators are allowed to perform this action',
+                                                  type: 'warning',
+                                              }),
+                                          )
+                            }
+                        >
+                            {t('Delete')}
+                        </Button>
+                    </div>
+                );
+            },
+            filter: false,
+        },
+    ]);
 
     useEffect(() => {
         let timeout;
@@ -40,8 +198,7 @@ function Trash() {
         const fetchDriversInTrash = async () => {
             try {
                 const response = await getAllDriversInTrash();
-                setDrivers(response);
-                setOriginalDrivers(response);
+                setRowData(response);
             } catch (error) {
                 console.error('API call failed:', error);
             } finally {
@@ -62,8 +219,7 @@ function Trash() {
             await restoreDriver(id, driver?.accessToken, axiosJWT);
             setTimeout(() => {
                 setIsLoading(false);
-                setDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.idDriver !== id));
-                setOriginalDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.idDriver !== id));
+                setRowData((prevDrivers) => prevDrivers.filter((driver) => driver.idDriver !== id));
                 setModalType('restoreSuccess');
                 setSelectedDriverId(null);
             }, 800);
@@ -90,10 +246,8 @@ function Trash() {
             await forceDeleteDriver(selectedDriverId, driver?.accessToken, axiosJWT);
             setTimeout(() => {
                 setIsLoading(false);
-                setDrivers((prevDrivers) => prevDrivers.filter((driver) => driver.idDriver !== selectedDriverId));
-                setOriginalDrivers((prevDrivers) =>
-                    prevDrivers.filter((driver) => driver.idDriver !== selectedDriverId),
-                );
+                setRowData((prevDrivers) => prevDrivers.filter((driver) => driver.idDriver !== selectedDriverId));
+
                 setModalType('deleteSuccess');
                 setSelectedDriverId(null);
             }, 800);
@@ -109,36 +263,6 @@ function Trash() {
 
     const handleCloseModal = () => {
         setModalType(null);
-    };
-
-    const handleFilter = () => {
-        let filtered = [...originalDrivers];
-
-        if (filters.zone === 'Ha Noi' || filters.zone === 'Ho Chi Minh') {
-            filtered = filtered.filter((driver) => driver.zone === filters.zone);
-        } else if (filters.zone === 'Others') {
-            filtered = filtered.filter((driver) => driver.zone !== 'Ha Noi' && driver.zone !== 'Ho Chi Minh');
-        }
-
-        if (filters.role) {
-            filtered = filtered.filter((driver) => (filters.role === 'Admin' ? driver.admin : !driver.admin));
-        }
-
-        if (filters.date) {
-            const now = new Date();
-            filtered = filtered.filter((driver) => {
-                const addedDate = new Date(driver.createdAt);
-                if (filters.date === 'This Month') {
-                    return addedDate.getMonth() === now.getMonth() && addedDate.getFullYear() === now.getFullYear();
-                }
-                if (filters.date === 'This Year') {
-                    return addedDate.getFullYear() === now.getFullYear();
-                }
-                return true;
-            });
-        }
-
-        setDrivers(filtered);
     };
 
     return (
@@ -163,195 +287,32 @@ function Trash() {
                 </Button>
             </div>
 
-            <div>
-                {/* FILTER */}
-                <div className='flex flex-wrap items-center justify-between gap-2 py-4 border-t border-border'>
-                    {/* Bộ lọc */}
-                    <div className='flex flex-wrap items-center gap-2'>
-                        <div className='filter-item'>
-                            {t('Date added:')}
-                            <select
-                                onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-                                className='focus:outline-none w-16 truncate'
-                            >
-                                <option value=''>{t('All')}</option>
-                                <option value='This Month'>{t('This Month')}</option>
-                                <option value='This Year'>{t('This Year')}</option>
-                            </select>
-                        </div>
-                        <div className='filter-item'>
-                            {'Zone:'}
-                            <select
-                                onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
-                                className='focus:outline-none w-16 truncate'
-                            >
-                                <option value=''>{t('All')}</option>
-                                <option value='Ha Noi'>{t('Ha Noi')}</option>
-                                <option value='Ho Chi Minh'>{t('Ho Chi Minh')}</option>
-                                <option value='Others'>{t('Other places')}</option>
-                            </select>
-                        </div>
-                        <div className='filter-item'>
-                            {t('Role')}:
-                            <select
-                                onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-                                className='focus:outline-none w-16 truncate'
-                            >
-                                <option value=''>{t('All')}</option>
-                                <option value='Admin'>{t('Admin')}</option>
-                                <option value='Driver'>{t('Driver')}</option>
-                            </select>
-                        </div>
-                        <button
-                            onClick={handleFilter}
-                            className='flex gap-1 cursor-pointer items-center text-secondary text-sm font-medium dark:text-white-dark'
-                        >
-                            <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='none'
-                                viewBox='0 0 24 24'
-                                strokeWidth={1.5}
-                                stroke='currentColor'
-                                className='size-5 dark:text-white-dark'
-                            >
-                                <path
-                                    strokeLinecap='round'
-                                    strokeLinejoin='round'
-                                    d='M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z'
-                                />
-                            </svg>
-                            {t('Filters')}
-                        </button>
-                    </div>
+            {/* TABLE */}
+            {isFetchData ? (
+                <div style={{ height: 350 }}>
+                    <AgGridReact
+                        rowData={rowData}
+                        columnDefs={columnDefsSkeleton}
+                        pagination={true}
+                        paginationPageSize={10}
+                        paginationPageSizeSelector={[10, 20, 50, 100]}
+                        theme={themeQuartz}
+                        defaultColDef={defaultColDef}
+                    />
                 </div>
-
-                {/* TABLE */}
-                <div className='overflow-x-auto'>
-                    <table className='text-text min-w-full divide-y divide-gray-200 rounded-lg shadow table-auto'>
-                        <thead className='bg-border dark:bg-background-dark'>
-                            <tr>
-                                <th className='table-item w-13 text-center'>#</th>
-                                <th className='table-item w-61'>{t('Name')}</th>
-                                <th className='table-item w-41'>{t('License Plate')}</th>
-                                <th className='table-item w-43'>{t('ID')}</th>
-                                <th className='table-item w-38'>{t('Mobile')}</th>
-                                <th className='table-item w-39'>{t('Date of Birth')}</th>
-                                <th className='table-item w-46'>{t('Zone')}</th>
-                                <th className='table-item text-center w-25'>{t('Role')}</th>
-                                <th className='table-item text-center w-37'></th>
-                            </tr>
-                        </thead>
-                        <tbody className='bg-white divide-y divide-gray-200 dark:bg-background-dark'>
-                            {drivers.length === 0 ? (
-                                <tr>
-                                    <td className='text-center text-sm font-medium' colSpan='10'>
-                                        <div className='mt-4 dark:text-white-dark uppercase'>
-                                            {t('No drivers available')}!
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                drivers.map((driver, index) => (
-                                    <tr key={index}>
-                                        <td className='table-item w-13 text-center'>
-                                            {isFetchData ? <Skeleton height={20} /> : index + 1}
-                                        </td>
-                                        <td className='table-item gap-1 w-61'>
-                                            <div className='flex items-center gap-2 dark:text-white-dark'>
-                                                {isFetchData ? (
-                                                    <>
-                                                        <Skeleton circle width={32} height={32} />
-                                                        <Skeleton width={170} height={20} />
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <img
-                                                            className='size-8 rounded-full object-cover'
-                                                            src={driver.avatar}
-                                                            alt='Avatar'
-                                                        />
-                                                        {driver.lastName} {driver.firstName}
-                                                    </>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className='table-item w-41'>
-                                            {isFetchData ? <Skeleton height={20} /> : driver.licensePlate}
-                                        </td>
-                                        <td className='table-item w-43'>
-                                            {isFetchData ? <Skeleton height={20} /> : driver.idDriver}
-                                        </td>
-                                        <td className='table-item w-38'>
-                                            {isFetchData ? <Skeleton height={20} /> : driver.phone}
-                                        </td>
-                                        <td className='table-item w-39'>
-                                            {isFetchData ? <Skeleton height={20} /> : driver.dateOfBirth}
-                                        </td>
-                                        <td className='table-item w-46'>
-                                            {isFetchData ? <Skeleton height={20} /> : driver.zone}
-                                        </td>
-                                        <td className='table-item text-center w-25'>
-                                            {isFetchData ? (
-                                                <Skeleton height={20} />
-                                            ) : (
-                                                <span
-                                                    className={
-                                                        (driver.admin
-                                                            ? 'text-red-500 bg-red-100'
-                                                            : 'text-gray-500 bg-gray-100') + ' p-0.5 rounded-sm'
-                                                    }
-                                                >
-                                                    {t(driver.admin ? 'Admin' : 'Driver')}
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td className='table-item w-37'>
-                                            <div className='flex justify-evenly gap-4'>
-                                                <Button
-                                                    className={!isAdmin ? variants.notAllowedBtn : variants.textBtn}
-                                                    onClick={
-                                                        isAdmin
-                                                            ? () => handleRestore(driver.idDriver)
-                                                            : () =>
-                                                                  dispatch(
-                                                                      addToast({
-                                                                          title: 'Warning',
-                                                                          message:
-                                                                              'Only admins are allowed to perform this action',
-                                                                          type: 'warning',
-                                                                      }),
-                                                                  )
-                                                    }
-                                                >
-                                                    {t('Restore')}
-                                                </Button>
-                                                <Button
-                                                    className={!isAdmin ? variants.notAllowedBtn : variants.deleteBtn}
-                                                    onClick={
-                                                        isAdmin
-                                                            ? () => handleClickDeleteButton(driver.idDriver)
-                                                            : () =>
-                                                                  dispatch(
-                                                                      addToast({
-                                                                          title: 'Warning',
-                                                                          message:
-                                                                              'Only admins are allowed to perform this action',
-                                                                          type: 'warning',
-                                                                      }),
-                                                                  )
-                                                    }
-                                                >
-                                                    {t('Delete')}
-                                                </Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+            ) : (
+                <div style={{ height: 350 }}>
+                    <AgGridReact
+                        rowData={rowData}
+                        columnDefs={columnDefs}
+                        pagination={true}
+                        paginationPageSize={10}
+                        paginationPageSizeSelector={[10, 20, 50, 100]}
+                        theme={themeQuartz}
+                        defaultColDef={defaultColDef}
+                    />
                 </div>
-            </div>
+            )}
 
             {isLoading && <Spinner />}
 
@@ -359,9 +320,9 @@ function Trash() {
                 <Modal
                     icon={<TickIconCustom />}
                     color='var(--color-success)'
-                    message='The driver has been restored.'
-                    description="The driver has been restored. Click 'Confirm' to continue editing."
-                    primaryActionLabel='Confirm'
+                    message={t('The driver has been restored.')}
+                    description={t("Click 'Confirm' to continue editing.")}
+                    primaryActionLabel={t('Confirm')}
                     onPrimaryAction={handleCloseModal}
                 />
             )}
@@ -370,7 +331,7 @@ function Trash() {
                 <Modal
                     icon={<CloseIcon />}
                     color='var(--color-failure)'
-                    message='Failed to restore this driver.'
+                    message={t('Failed to restore this driver.')}
                     description={errorMessage}
                     primaryActionLabel='Confirm'
                     onPrimaryAction={handleCloseModal}

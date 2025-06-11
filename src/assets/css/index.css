@@ -94,6 +94,19 @@
 }
 
 @layer components {
+    .custom-center-header .ag-header-cell-label {
+        justify-content: center;
+    }
+    .message {
+        padding: 6px 12px;
+        max-width: 200px;
+        width: fit-content;
+        font-size: 0.875rem;
+        color: #fff;
+        border-radius: 0.75rem;
+        white-space: pre-line;
+        overflow-wrap: break-word;
+    }
     .input-nav {
         padding: 6px 12px 8px 6px;
         max-width: 160px;
